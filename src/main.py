@@ -30,6 +30,8 @@ from src.dq_metadata import (
     save_dq_result,
 )
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_ROOT / "data"
 
 PIPELINE_NAME = "linkedin_leads_pipeline"
 
@@ -40,7 +42,8 @@ def save_failed_records(df):
     if df.empty:
         return
 
-    failed_dir = Path("data/failed")
+    project_root = Path(__file__).resolve().parent.parent
+    failed_dir = project_root / "data" / "failed"
     failed_dir.mkdir(parents=True, exist_ok=True)
 
     failed_file = failed_dir / "failed_leads.csv"
@@ -50,7 +53,8 @@ def save_failed_records(df):
 
 
 def main():
-    file_path = Path("data/raw/leads.csv")
+    project_root = Path(__file__).resolve().parent.parent
+    file_path = project_root / "data" / "raw" / "leads.csv"
 
     # ---------------------------------------------------------
     # Start pipeline run

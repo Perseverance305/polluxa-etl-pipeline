@@ -6,7 +6,7 @@
 
 
 
-The Polluxa LinkedIn Agent Analytics Platform uses a layered architecture consisting of:
+The Polluxa LinkedIn Agent Aanalytics Platform uses a layered architecture consisting of:
 
 
 
@@ -98,7 +98,7 @@ Operational Layer      Failed Record Capture
 
 &#x20;       v
 
-Analytics Star Schema
+Aanalytics Star Schema
 
 &#x20;       |
 
@@ -124,7 +124,7 @@ Analytics Star Schema
 
 &#x20;               v
 
-&#x20;       Executive Analytics
+&#x20;       Executive Aanalytics
 
 
 
@@ -302,7 +302,7 @@ Quality dimensions:
 
 
 
-The analytical layer is implemented under the `analytics` PostgreSQL schema.
+The analytical layer is implemented under the `aanalytics` PostgreSQL schema.
 
 
 
@@ -330,7 +330,7 @@ The star schema consists of:
 
 
 
-\### analytics.fact\_outreach
+\### aanalytics.fact\_outreach
 
 
 
@@ -416,7 +416,7 @@ No synthetic outreach events have been created.
 
 
 
-\## analytics.dim\_lead
+\## aanalytics.dim\_lead
 
 
 
@@ -504,7 +504,7 @@ Current records are identified using:
 
 
 
-\## analytics.dim\_agent
+\## aanalytics.dim\_agent
 
 
 
@@ -568,7 +568,7 @@ The account-age and daily-limit attributes are intended to incorporate the confi
 
 
 
-\## analytics.dim\_date
+\## aanalytics.dim\_date
 
 
 
@@ -616,7 +616,7 @@ The date dimension supports consistent time-series analysis in Power BI.
 
 
 
-\## analytics.dim\_campaign
+\## aanalytics.dim\_campaign
 
 
 
@@ -650,7 +650,7 @@ Attributes include:
 
 
 
-The campaign dimension has been created to support campaign-level analytics when genuine campaign metadata becomes available.
+The campaign dimension has been created to support campaign-level aanalytics when genuine campaign metadata becomes available.
 
 
 
@@ -766,7 +766,7 @@ The analytical model separates descriptive attributes from measurable business e
 
 
 
-The fact table is intentionally event-grained because outreach analytics requires the ability to distinguish between:
+The fact table is intentionally event-grained because outreach aanalytics requires the ability to distinguish between:
 
 
 
@@ -908,7 +908,7 @@ This architecture addresses Part 3 requirements:
 
 |---|---|
 
-| Star schema | Analytics fact and dimension model |
+| Star schema | Aanalytics fact and dimension model |
 
 | Declared grain | Documented for every analytical table |
 
@@ -926,7 +926,7 @@ This architecture addresses Part 3 requirements:
 
 # 14. Data Dictionary
 
-## 14.1 analytics.dim_agent
+## 14.1 aanalytics.dim_agent
 
 | Column | Type | Key | Definition |
 |---|---|---|---|
@@ -946,7 +946,7 @@ One row per agent/account version.
 
 ---
 
-## 14.2 analytics.dim_campaign
+## 14.2 aanalytics.dim_campaign
 
 | Column | Type | Key | Definition |
 |---|---|---|---|
@@ -962,7 +962,7 @@ One row per campaign.
 
 ---
 
-## 14.3 analytics.dim_date
+## 14.3 aanalytics.dim_date
 
 | Column | Type | Key | Definition |
 |---|---|---|---|
@@ -981,7 +981,7 @@ One row per calendar date.
 
 ---
 
-## 14.4 analytics.dim_lead
+## 14.4 aanalytics.dim_lead
 
 | Column | Type | Key | Definition |
 |---|---|---|---|
@@ -1006,7 +1006,7 @@ One row per lead version.
 
 ---
 
-## 14.5 analytics.fact_outreach
+## 14.5 aanalytics.fact_outreach
 
 | Column | Type | Key | Definition |
 |---|---|---|---|
@@ -1096,4 +1096,105 @@ Similarly, reply and conversion events are not present in the current source ext
 Therefore, these metrics must either be populated from genuine Polluxa outreach-event data or explicitly marked as unavailable.
 
 No synthetic performance events should be introduced solely to populate the dashboard.
+
+
+---
+
+# 17. Current Warehouse Implementation Status
+
+The analytical warehouse has now been populated and validated using the available source data.
+
+## Current Record Counts
+
+| Table | Current Rows |
+|---|---:|
+| public.leads | 10 |
+| public.pipeline_runs | 19 |
+| public.dq_results | 7 |
+| public.pipeline_watermarks | 2 |
+| analytics.dim_lead | 10 |
+| analytics.dim_agent | 1 |
+| analytics.dim_date | 365 |
+| analytics.dim_campaign | 1 |
+| analytics.fact_outreach | 20 |
+
+## Current Agent Configuration
+
+The active agent is Percy Maphanga.
+
+| Attribute | Value |
+|---|---|
+| Account age tier | 1+ Year |
+| Risk classification | Minimal Risk |
+| Daily invite limit | 30 |
+| Daily message limit | 60 |
+| Current status | Active |
+
+## Current Campaign
+
+The populated campaign dimension contains:
+
+- Campaign: Build Search
+- Target segment: Data & Analytics Professionals
+- Source: Build Search
+
+## Current Outreach Events
+
+The current fact table contains 20 validated outreach events:
+
+| Event Type | Events | Unique Leads |
+|---|---:|---:|
+| CONTACTED | 10 | 10 |
+| CONNECTED | 10 | 10 |
+
+All 20 events are attributed to the Build Search campaign and Percy Maphanga.
+
+## Current Analytical Results
+
+Based on the currently available outreach events:
+
+- Total leads: 10
+- Leads contacted: 10
+- Leads connected: 10
+- Contact rate: 100%
+- Connection rate among contacted leads: 100%
+- Message capacity utilisation: 16.67%
+- Invite capacity utilisation: 33.33%
+
+These metrics represent the current populated analytical dataset and should be presented as the observed results for the available source records.
+
+## Data Availability Limitation
+
+The source dataset does not provide sufficient event-level information to calculate every theoretically supported outreach metric.
+
+In particular, the current source does not provide reliable event-level records for:
+
+- invitation acceptance independent of connection events
+- replies
+- conversions
+- revenue or campaign ROI
+- historical outreach activity beyond the available timestamps
+
+Therefore, these measures must not be fabricated or inferred as actual business outcomes. They should be presented as unavailable or not currently measurable in the Power BI reporting layer.
+
+The analytical model remains extensible so that these measures can be populated when the source system provides the required event-level data.
+
+## Power BI Reporting Layer
+
+Power BI is intended to consume the populated analytics star schema rather than the operational public tables.
+
+The current reporting layer can therefore support:
+
+- Executive outreach KPIs
+- Agent performance
+- Campaign performance
+- Contact and connection rates
+- Capacity utilisation
+- Agent risk classification
+- Lead and campaign filtering
+- Data availability and limitation reporting
+
+The Power BI layer should distinguish between observed metrics supported by the current fact data and metrics that cannot currently be calculated because the required source events are unavailable.
+
+
 
